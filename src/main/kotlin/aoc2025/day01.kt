@@ -1,3 +1,5 @@
+package aoc2025
+
 fun main() {
 
     fun part1(input: List<String>): Int {
@@ -15,12 +17,12 @@ fun main() {
         }.flatten()
         return calculateZeros(commands)
     }
-    // Or read a large test input from the `src/Day01_test.txt` file:
-    val testInput = readInput("Day01_test")
+
+
+    val testInput = readInput("day01_test")
     part1(testInput)
 
-//    // Read the input from the `src/Day01.txt` file.
-    val input = readInput("Day01")
+    val input = readInput("day01")
     part1(input).println()
     part2(input).println()
 }
