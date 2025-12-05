@@ -57,7 +57,7 @@ fun isNotValidPart2(id: Long): Boolean {
 
     for (i in (1..(length / 2))) {
         val part = idString.substring(0, i)
-        if (length % i != 0) continue
+        if (length.mod(i) != 0) continue
 
         val times = length / i
 
