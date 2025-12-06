@@ -8,9 +8,9 @@ import kotlin.io.path.readText
 /**
  * Reads lines from the given input txt file.
  */
-fun readInput(name: String) = Path("src/main/kotlin/aoc2025/input/$name.txt").readText().trim().lines()
+fun readInput(name: String): List<String> = Path("src/main/kotlin/aoc2025/input/$name.txt").readText().trim().lines()
 
-fun readInputForNotebook(name: String) = Path("/Users/hasan/projects/aoc-kotlin-2025/src/main/kotlin/aoc2025/input/$name.txt")
+fun readInputForNotebook(name: String): List<String> = Path("/Users/hasan/projects/aoc-kotlin-2025/src/main/kotlin/aoc2025/input/$name.txt")
     .readText()
     .trim()
     .lines()
