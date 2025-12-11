@@ -12,21 +12,33 @@ fun main() {
         Coordinates3d(x, y, z)
     }
     println(part1(coordinates))
-
+    println(part2(coordinates))
 }
 
 private fun part1(
-    coordinates: List<Coordinates3d>
+    coordinates: List<Coordinates3d>,
+    amountOfConnections: Int = 1000
 ): Int {
     val shortestDistances = createDistances(coordinates).sortedBy { it.distance }
-    val largest = findLargestClusters(
+    val largest = findLargestClustersPart1(
         shortestLines = shortestDistances,
-        amountOfConnections = 1000,
+        amountOfConnections = amountOfConnections,
         amountOfClusters = 3
     )
     return largest
         .map { it.size }
         .reduce(Int::times)
+}
+
+private fun part2(
+    coordinates: List<Coordinates3d>
+): Long {
+    val shortestDistances = createDistances(coordinates).sortedBy { it.distance }
+    val (iFinal, jFinal) = findFinalPoints(
+        shortestDistances,
+        amountOfPoints = coordinates.size
+    )
+    return coordinates[iFinal].x.toLong() * coordinates[jFinal].x.toInt()
 }
 
 data class Coordinates3d(
@@ -70,7 +82,7 @@ private fun createDistances(coordinates: List<Coordinates3d>): List<Line> {
     return pairs
 }
 
-private fun findLargestClusters(
+private fun findLargestClustersPart1(
     shortestLines: List<Line>,
     amountOfConnections: Int,
     amountOfClusters: Int
@@ -91,18 +103,21 @@ private fun findLargestClusters(
                     val newCluster = mutableSetOf(i, j)
                     clusters.add(newCluster)
                 }
+
                 iCluster != null && jCluster == null -> {
                     iCluster.add(i)
                     iCluster.add(j)
                 }
+
                 iCluster == null && jCluster != null -> {
                     jCluster.add(j)
                     jCluster.add(i)
                 }
+
                 iCluster != null && jCluster != null -> {
                     if (iCluster != jCluster) {
                         iCluster.addAll(jCluster)
-                        jCluster.clear()
+                        clusters.remove(jCluster)
                     }
                 }
             }
@@ -112,6 +127,51 @@ private fun findLargestClusters(
     return clusters.sortedBy { it.size }.reversed().take(amountOfClusters)
 }
 
+private fun findFinalPoints(
+    shortestLines: List<Line>,
+    amountOfPoints: Int,
+): Pair<Int, Int> {
+    val clusters = mutableListOf<MutableSet<Int>>()
+    var iFinal = 0
+    var jFinal = 1
+
+    for (line in shortestLines) {
+        val i = line.i
+        val j = line.j
+        val iCluster: MutableSet<Int>? = clusters.find { it.contains(i) }
+        val jCluster: MutableSet<Int>? = clusters.find { it.contains(j) }
+
+        when {
+            iCluster == null && jCluster == null -> {
+                val newCluster = mutableSetOf(i, j)
+                clusters.add(newCluster)
+            }
+
+            iCluster != null && jCluster == null -> {
+                iCluster.add(i)
+                iCluster.add(j)
+            }
+
+            iCluster == null && jCluster != null -> {
+                jCluster.add(j)
+                jCluster.add(i)
+            }
+
+            iCluster != null && jCluster != null -> {
+                if (iCluster != jCluster) {
+                    iCluster.addAll(jCluster)
+                    clusters.remove(jCluster)
+                }
+            }
+        }
+        if (clusters.size == 1 && clusters.first().size == amountOfPoints) {
+            iFinal = i
+            jFinal = j
+            break
+        }
+    }
+    return iFinal to jFinal
+}
 
 
 
