@@ -19,22 +19,10 @@ fun main() {
     }
 
     fun part2(map: List<List<Char>>): Long {
-        val h = map.size
         val w = map[0].size
-        val splitterMap: Array<Array<Int>> = Array(h) { y ->
-            Array(w) { x ->
-                0
-            }
-        }
         val x0 = w / 2
-
-        val root = Node()
-
-        passThrowMapRecursive2(x0, 0, map, root)
-
         val counter = Counter()
-        root.calculatePaths(counter)
-
+        passThrowMapRecursive2(x0, 0, map, counter)
         return counter.count
     }
 
@@ -43,7 +31,6 @@ fun main() {
 //    val input = testInput
 
     val map: List<List<Char>> = input.map { it.toCharArray().toList() }
-
 //    println(part1(map))
     println(part2(map))
 }
@@ -77,26 +64,22 @@ fun passThrowMapRecursive2(
     x: Int,
     y: Int,
     map: List<List<Char>>,
-    parent: Node
+    counter: Counter
 ) {
     val h = map.size
     val w = map[0].size
 
-    if (y >= h || x < 0 || x >= w) return
-
+    if (y >= h || x < 0 || x >= w) {
+        counter.count++
+        return
+    }
     val current = map[y][x]
 
     if (current == '.') {
-        passThrowMapRecursive2(x, y + 1, map, parent)
+        passThrowMapRecursive2(x, y + 1, map, counter)
     } else {
-        val left = Node()
-        parent.left = left
-
-        val right = Node()
-        parent.right = right
-
-        passThrowMapRecursive2(x - 1, y, map, left)
-        passThrowMapRecursive2(x + 1, y, map, right)
+        passThrowMapRecursive2(x - 1, y, map, counter)
+        passThrowMapRecursive2(x + 1, y, map, counter)
     }
 }
 
@@ -104,7 +87,6 @@ class Node(
     var left: Node? = null,
     var right: Node? = null
 ) {
-
     fun calculatePaths(counter: Counter) {
         if (left == null && right == null) {
             counter.count++
