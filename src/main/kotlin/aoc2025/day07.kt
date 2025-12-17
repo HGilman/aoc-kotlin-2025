@@ -3,6 +3,7 @@ package aoc2025
 
 fun main() {
 
+    /** It my solution */
     fun part1(map: List<List<Char>>): Int {
         val h = map.size
         val w = map[0].size
@@ -18,17 +19,13 @@ fun main() {
         }
     }
 
+    /** It seemed that solution of part 1 didn't work for part two, so i should find different approach*/
     fun part2(map: List<List<Char>>): Long {
-        val w = map[0].size
-        val x0 = w / 2
-        val counter = Counter()
-        passThrowMapRecursive2(x0, 0, map, counter)
-        return counter.count
+        return calculatePaths(map)
     }
 
-    val testInput = readInput("day07_test")
+//    val input = readInput("day07_test")
     val input = readInput("day07")
-//    val input = testInput
 
     val map: List<List<Char>> = input.map { it.toCharArray().toList() }
 //    println(part1(map))
@@ -60,47 +57,30 @@ fun passThrowMapRecursive(
     }
 }
 
-fun passThrowMapRecursive2(
-    x: Int,
-    y: Int,
-    map: List<List<Char>>,
-    counter: Counter
-) {
-    val h = map.size
-    val w = map[0].size
 
-    if (y >= h || x < 0 || x >= w) {
-        counter.count++
-        return
-    }
-    val current = map[y][x]
-
-    if (current == '.') {
-        passThrowMapRecursive2(x, y + 1, map, counter)
-    } else {
-        passThrowMapRecursive2(x - 1, y, map, counter)
-        passThrowMapRecursive2(x + 1, y, map, counter)
-    }
-}
-
-class Node(
-    var left: Node? = null,
-    var right: Node? = null
-) {
-    fun calculatePaths(counter: Counter) {
-        if (left == null && right == null) {
-            counter.count++
-            println(counter.count)
+// initially there is one beam in center of grid
+fun calculatePaths(
+    grid: List<List<Char>>
+): Long {
+    val h = grid.size
+    val w = grid[0].size
+    var previousLinePaths = mutableMapOf(grid[0].size / 2 to 1L)
+    for (y in 2 until h - 1) {
+        val line = grid[y]
+        val currentLinePaths = mutableMapOf<Int, Long>()
+        for (x in 0 until w) {
+            val amount = previousLinePaths.getOrDefault(x, 0)
+            if (line[x] != '.') {
+                currentLinePaths[x - 1] = currentLinePaths.getOrDefault(x - 1, 0) + amount
+                currentLinePaths[x + 1] = currentLinePaths.getOrDefault(x + 1, 0) + amount
+            } else {
+                currentLinePaths[x] = currentLinePaths.getOrDefault(x, 0) + amount
+            }
         }
-        left?.calculatePaths(counter)
-        right?.calculatePaths(counter)
+        previousLinePaths = currentLinePaths
     }
+    return previousLinePaths.values.sum()
 }
-
-class Counter {
-    var count: Long = 0L
-}
-
 
 
 
